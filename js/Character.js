@@ -1,19 +1,18 @@
 // noinspection JSUnresolvedVariable
-// noinspection JSFileReferences
 
 import {getDicePlaceholderHtml, getDiceRollArray, getPercentage} from "./utils.js";
 
-function Character(data) {
-  Object.assign(this, data)
-
-  this.diceHtml = getDicePlaceholderHtml(this.diceCount)
-
-  this.setDiceHtml = () => {
+class Character{
+  constructor(data){
+    Object.assign(this, data)
+    this.diceHtml = getDicePlaceholderHtml(this.diceCount)
+    this.dead = false
+  }
+  setDiceHtml = () => {
     this.currentDiceScore = getDiceRollArray(this.diceCount)
     this.diceHtml = this.currentDiceScore.map(num => `<div class="dice">${num}</div>`).join("")
   }
-
-  this.getCharacterHtml = () => {
+  getCharacterHtml = () => {
     const healthBar = this.getHealthBarHtml()
 
     return `
@@ -26,8 +25,7 @@ function Character(data) {
         </div>
     </div>`
   }
-
-  this.takeDamage = (attackScoreArray) => {
+  takeDamage = (attackScoreArray) => {
     const totalAttackScore = attackScoreArray.reduce((acc, num) => acc + num)
     this.health -= totalAttackScore
     if (this.health <= 0){
@@ -36,8 +34,7 @@ function Character(data) {
     }
 
   }
-
-  this.getHealthBarHtml = () => {
+  getHealthBarHtml = () => {
     const percent = getPercentage(this.health, this.maxHealth)
     return`
       <div class="health-bar-outer">
@@ -47,6 +44,5 @@ function Character(data) {
       </div>`
   }
 }
-
 
 export default Character
