@@ -1,21 +1,52 @@
 // noinspection JSUnresolvedVariable
 // noinspection JSFileReferences
 
-import {getDiceRollArray} from "./utils.js";
+import {getDicePlaceholderHtml, getDiceRollArray, getPercentage} from "./utils.js";
 
 function Character(data) {
   Object.assign(this, data)
 
-  this.getDiceRollHtml = (diceCount) => getDiceRollArray(diceCount).map(roll => `<div class="dice"> ${roll} </div>`).join("")
+  this.diceHtml = getDicePlaceholderHtml(this.diceCount)
 
-  this.getCharacterHtml = () => `<div class="character-card">
+  this.setDiceHtml = () => {
+    this.currentDiceScore = getDiceRollArray(this.diceCount)
+    this.diceHtml = this.currentDiceScore.map(num => `<div class="dice">${num}</div>`).join("")
+  }
+
+  this.getCharacterHtml = () => {
+    const healthBar = this.getHealthBarHtml()
+
+    return `
+    <div class="character-card">
         <h4 class="name"> ${this.name} </h4>
         <img class="avatar" src="${this.avatar}" alt="${this.name} character"/>
-        <p class="health">health: <b> ${this.health} </b></p>
+        <p class="health">health: <b> ${this.health}<br/> ${healthBar} </b></p>
         <div class="dice-container">
-          ${this.getDiceRollHtml(this.diceCount)}
+          ${this.diceHtml}
         </div>
     </div>`
+  }
+
+  this.takeDamage = (attackScoreArray) => {
+    const totalAttackScore = attackScoreArray.reduce((acc, num) => acc + num)
+    this.health -= totalAttackScore
+    if (this.health <= 0){
+      this.health = 0
+      this.dead = true
+    }
+
+  }
+
+  this.getHealthBarHtml = () => {
+    const percent = getPercentage(this.health, this.maxHealth)
+    return`
+      <div class="health-bar-outer">
+          <div class="health-bar-inner ${percent <= 25 ? "danger" : ""} " 
+              style="width: ${percent}%;">
+          </div>
+      </div>`
+  }
 }
+
 
 export default Character
